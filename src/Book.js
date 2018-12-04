@@ -2,12 +2,11 @@ import React, { Component } from "react";
 import ShelfChanger from "./ShelfChanger";
 
 class Book extends Component {
-  changeBookShelfHandler(shelfKey) {
-    const changeInfo = {
-      destination: shelfKey,
+  changeBookShelfHandler(newShelfKey) {
+    this.props.changeBookShelfHandler({
+      destination: newShelfKey,
       book: this.props.bookInfo
-    };
-    this.props.changeHandler(changeInfo);
+    });
   }
   render() {
     return (
@@ -17,13 +16,17 @@ class Book extends Component {
             <div
               className="book-cover"
               style={{
-                width: this.props.bookInfo.image.width,
-                height: this.props.bookInfo.image.height,
-                backgroundImage: `url("${this.props.bookInfo.image.url}")`
+                width: 128,
+                height: 192,
+                backgroundImage: `url("${
+                  this.props.bookInfo.imageLinks.thumbnail
+                }")`
               }}
             />
             <ShelfChanger
-              changeHandler={shelfKey => this.changeBookShelfHandler(shelfKey)}
+              changeBookShelfHandler={newShelfKey =>
+                this.changeBookShelfHandler(newShelfKey)
+              }
               shelfKey={this.props.shelfKey}
               shelves={this.props.shelves}
             />

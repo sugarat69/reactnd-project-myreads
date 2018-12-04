@@ -2,10 +2,6 @@ import React, { Component } from "react";
 import Book from "./Book";
 
 class BookShelf extends Component {
-  changeBookShelfHandler(changeInfo) {
-    changeInfo.source = this.props.shelfKey;
-    this.props.changeHandler(changeInfo);
-  }
   render() {
     return (
       <div className="bookshelf">
@@ -14,20 +10,18 @@ class BookShelf extends Component {
         </h2>
         <div className="bookshelf-books">
           <ol className="books-grid">
-            {this.props.books.map(book => {
-              return (
-                <li key={book.title}>
-                  <Book
-                    bookInfo={book}
-                    changeHandler={changeInfo =>
-                      this.changeBookShelfHandler(changeInfo)
-                    }
-                    shelfKey={this.props.shelfKey}
-                    shelves={this.props.shelves}
-                  />
-                </li>
-              );
-            })}
+            {this.props.books.map(book => (
+              <li key={book.id}>
+                <Book
+                  bookInfo={book}
+                  shelfKey={this.props.shelfKey}
+                  changeBookShelfHandler={changeInfo =>
+                    this.props.changeBookShelfHandler(changeInfo)
+                  }
+                  shelves={this.props.shelves}
+                />
+              </li>
+            ))}
           </ol>
         </div>
       </div>
