@@ -4,7 +4,6 @@ import { Route } from "react-router-dom";
 import SearchBar from "./SearchBar";
 import BooksList from "./BooksList";
 
-// import * as BooksAPI from './BooksAPI'
 import "./App.css";
 
 class App extends Component {
@@ -128,6 +127,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    // add event listener to save state to local storage on refresh
     window.addEventListener("beforeunload", event => {
       event.preventDefault();
 
@@ -135,7 +135,7 @@ class App extends Component {
         const serializedState = JSON.stringify(this.state);
         localStorage.setItem("state", serializedState);
       } catch (err) {
-        // ignore error
+        console.log(err);
       }
       event.returnValue = "";
     });

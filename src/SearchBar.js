@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+
 import { search } from "./BooksAPI";
 import Book from "./Book";
 
@@ -14,7 +16,7 @@ const SearchBar = props => {
           console.log(data);
           props.updateSearchResults([], value);
         } else {
-          // filter books with missing thumbnails
+          // filter out books with missing thumbnails
           const booksWithImages = data.filter(
             book => book.imageLinks && book.imageLinks.thumbnail
           );
@@ -68,6 +70,14 @@ const SearchBar = props => {
       </div>
     </div>
   );
+};
+
+SearchBar.propTypes = {
+  shelves: PropTypes.object.isRequired,
+  searchInfo: PropTypes.object.isRequired,
+  changeBookShelfHandler: PropTypes.func.isRequired,
+  findBookInShelves: PropTypes.func.isRequired,
+  updateSearchResults: PropTypes.func.isRequired
 };
 
 export default SearchBar;

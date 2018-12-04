@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const ShelfChanger = props => {
   // construct options list
@@ -16,7 +17,7 @@ const ShelfChanger = props => {
       </option>
     );
   } else {
-    // in search, book not on shelf yet, None is default
+    // in search and book is not on a shelf, None is default
     options.push(
       <option value="none" key="none">
         None
@@ -37,7 +38,6 @@ const ShelfChanger = props => {
   Array.prototype.push.apply(options, otherShelves);
 
   // add None option to bottom if not in search results
-
   if (props.shelfKey) {
     options.push(
       <option value="none" key="none">
@@ -55,6 +55,12 @@ const ShelfChanger = props => {
       </select>
     </div>
   );
+};
+
+ShelfChanger.propTypes = {
+  shelves: PropTypes.object.isRequired,
+  shelfKey: PropTypes.string.isRequired,
+  changeBookShelfHandler: PropTypes.func.isRequired
 };
 
 export default ShelfChanger;
