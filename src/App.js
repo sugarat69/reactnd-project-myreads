@@ -8,25 +8,6 @@ import BooksList from "./BooksList";
 import "./App.css";
 
 class App extends Component {
-  state = {
-    /**
-     * TODO: Instead of using this state variable to keep track of which page
-     * we're on, use the URL in the browser's address bar. This will ensure that
-     * users can use the browser's back and forward buttons to navigate between
-     * pages, as well as provide a good URL they can bookmark and share.
-     */
-    //showSearchPage: false
-    shelves: {
-      currentlyReading: [],
-      wantToRead: [],
-      read: []
-    },
-    search: {
-      results: [],
-      query: ""
-    }
-  };
-
   constructor(props) {
     super(props);
 
@@ -35,6 +16,30 @@ class App extends Component {
       wantToRead: "Want to Read",
       read: "Read"
     };
+
+    // load state from local storage (if any)
+    const initialState = {
+      shelves: {
+        currentlyReading: [],
+        wantToRead: [],
+        read: []
+      },
+      search: {
+        results: [],
+        query: ""
+      }
+    };
+    try {
+      const serializedState = localStorage.getItem("state");
+
+      if (serializedState) {
+        this.state = JSON.parse(serializedState);
+      } else {
+        this.state = initialState;
+      }
+    } catch (err) {
+      this.state = initialState;
+    }
   }
   changeBookShelfHandler(changeInfo) {
     const currentShelf = this.findBookInShelves(changeInfo.book);
@@ -120,6 +125,20 @@ class App extends Component {
         />
       </div>
     );
+  }
+
+  componentDidMount() {
+    window.addEventListener("beforeunload", event => {
+      event.preventDefault();
+
+      try {
+        const serializedState = JSON.stringify(this.state);
+        localStorage.setItem("state", serializedState);
+      } catch (err) {
+        // ignore error
+      }
+      event.returnValue = "";
+    });
   }
 }
 
