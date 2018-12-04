@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import { Route } from "react-router-dom";
 
 import SearchBar from "./SearchBar";
@@ -7,7 +7,7 @@ import BooksList from "./BooksList";
 // import * as BooksAPI from './BooksAPI'
 import "./App.css";
 
-class App extends React.Component {
+class App extends Component {
   state = {
     /**
      * TODO: Instead of using this state variable to keep track of which page
@@ -69,6 +69,7 @@ class App extends React.Component {
   }
 
   // this function used here as well as ShelfChanger component
+  // search all bookshelves for specified book
   findBookInShelves(book) {
     return Object.keys(this.shelves).reduce((accumulator, currentShelfKey) => {
       if (accumulator) return accumulator; // book already found
