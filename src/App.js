@@ -42,9 +42,15 @@ class App extends Component {
       });
   }
 
-  updateSearchResults(results, query) {
+  updateSearchQuery(query) {
     this.setState(prevState => {
-      prevState.search = { results, query };
+      prevState.search.query = query;
+      return prevState;
+    });
+  }
+  updateSearchResults(results) {
+    this.setState(prevState => {
+      prevState.search.results = results;
       return prevState;
     });
   }
@@ -85,9 +91,10 @@ class App extends Component {
                 this.changeBookShelfHandler(changeInfo)
               }
               findShelfForBook={book => this.findShelfForBook(book)}
-              updateSearchResults={(newResults, query) =>
-                this.updateSearchResults(newResults, query)
+              updateSearchResults={newResults =>
+                this.updateSearchResults(newResults)
               }
+              updateSearchQuery={query => this.updateSearchQuery(query)}
             />
           )}
         />

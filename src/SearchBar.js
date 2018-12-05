@@ -7,20 +7,21 @@ import Book from "./Book";
 
 const SearchBar = props => {
   const handleQueryChange = value => {
+    props.updateSearchQuery(value);
     search(value)
       .then(data => {
         if (!data) {
           console.log("no data returned from search");
-          props.updateSearchResults([], value);
+          props.updateSearchResults([]);
         } else if (data.error) {
           console.log(data);
-          props.updateSearchResults([], value);
+          props.updateSearchResults([]);
         } else {
           // filter out books with missing thumbnails
           const booksWithImages = data.filter(
             book => book.imageLinks && book.imageLinks.thumbnail
           );
-          props.updateSearchResults(booksWithImages, value);
+          props.updateSearchResults(booksWithImages);
         }
       })
       .catch(err => {
@@ -77,7 +78,8 @@ SearchBar.propTypes = {
   searchInfo: PropTypes.object.isRequired,
   changeBookShelfHandler: PropTypes.func.isRequired,
   findShelfForBook: PropTypes.func.isRequired,
-  updateSearchResults: PropTypes.func.isRequired
+  updateSearchResults: PropTypes.func.isRequired,
+  updateSearchQuery: PropTypes.func.isRequired
 };
 
 export default SearchBar;
