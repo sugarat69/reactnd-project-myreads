@@ -4,35 +4,51 @@ import { Link } from "react-router-dom";
 
 import BookShelf from "./BookShelf";
 
-const BooksList = props => (
-  <div className="list-books">
-    <div className="list-books-title">
-      <h1>MyReads</h1>
-    </div>
-    <div className="list-books-content">
-      <div>
-        {Object.keys(props.shelves).map(shelfKey => (
-          <BookShelf
-            books={props.shelfContents[shelfKey]}
-            shelfKey={shelfKey}
-            changeBookShelfHandler={changeInfo =>
-              props.changeBookShelfHandler(changeInfo)
-            }
-            shelves={props.shelves}
-            key={shelfKey}
-          />
-        ))}
+const BooksList = props => {
+  // sort books into shelves
+  const emptyShelves = Object.keys(props.shelves).reduce(
+    (accumulator, shelfKey) => {
+      accumulator[shelfKey] = [];
+      return accumulator;
+    },
+    {}
+  );
+
+  const shelves = props.shelfContents.reduce((accumulator, book) => {
+    accumulator[book.shelf].push(book);
+    return accumulator;
+  }, emptyShelves);
+
+  return (
+    <div className="list-books">
+      <div className="list-books-title">
+        <h1>MyReads</h1>
+      </div>
+      <div className="list-books-content">
+        <div>
+          {Object.keys(shelves).map(shelfKey => (
+            <BookShelf
+              books={shelves[shelfKey]}
+              shelfKey={shelfKey}
+              changeBookShelfHandler={changeInfo =>
+                props.changeBookShelfHandler(changeInfo)
+              }
+              shelves={props.shelves}
+              key={shelfKey}
+            />
+          ))}
+        </div>
+      </div>
+      <div className="open-search">
+        <Link to="/search">Add a Book</Link>
       </div>
     </div>
-    <div className="open-search">
-      <Link to="/search">Add a Book</Link>
-    </div>
-  </div>
-);
+  );
+};
 
 BooksList.propTypes = {
   shelves: PropTypes.object.isRequired,
-  shelfContents: PropTypes.object.isRequired,
+  shelfContents: PropTypes.array.isRequired,
   changeBookShelfHandler: PropTypes.func.isRequired
 };
 

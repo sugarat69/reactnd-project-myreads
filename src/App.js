@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Route } from "react-router-dom";
 
+import { getAll, update } from "./BooksAPI";
 import SearchBar from "./SearchBar";
 import BooksList from "./BooksList";
 
@@ -16,53 +17,29 @@ class App extends Component {
       read: "Read"
     };
 
-    // load state from local storage (if any)
-    const initialState = {
-      shelves: {
-        currentlyReading: [],
-        wantToRead: [],
-        read: []
-      },
+    this.state = {
+      allBooks: [],
       search: {
         results: [],
         query: ""
       }
     };
-    try {
-      const serializedState = localStorage.getItem("state");
-
-      if (serializedState) {
-        this.state = JSON.parse(serializedState);
-      } else {
-        this.state = initialState;
-      }
-    } catch (err) {
-      this.state = initialState;
-    }
   }
   changeBookShelfHandler(changeInfo) {
-    const currentShelf = this.findBookInShelves(changeInfo.book);
+    const currentShelf = this.findShelfForBook(changeInfo.book);
 
     if (currentShelf === changeInfo.destination) {
       // user selected the shelf that the book is currently on, do nothing
       return;
     }
 
-    this.setState(prevState => {
-      // remove book from current shelf (if necessary)
-      if (currentShelf) {
-        prevState.shelves[currentShelf] = prevState.shelves[
-          currentShelf
-        ].filter(book => (book.id !== changeInfo.book.id ? book : null));
-      }
-
-      // add book to new shelf (if not set to none)
-      if (changeInfo.destination !== "none") {
-        prevState.shelves[changeInfo.destination].push(changeInfo.book);
-      }
-
-      return prevState;
-    });
+    update(changeInfo.book, changeInfo.destination)
+      .then(results => {
+        this.fetchAllBooks();
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
   updateSearchResults(results, query) {
@@ -73,21 +50,13 @@ class App extends Component {
   }
 
   // this function used here as well as ShelfChanger component
-  // search all bookshelves for specified book
-  findBookInShelves(book) {
-    return Object.keys(this.shelves).reduce((accumulator, currentShelfKey) => {
-      if (accumulator) return accumulator; // book already found
+  // search specified book and return its current shelf
+  findShelfForBook(book) {
+    const bookInShelf = this.state.allBooks.find(
+      currentBook => currentBook.id === book.id
+    );
 
-      if (
-        this.state.shelves[currentShelfKey].find(
-          currentBook => currentBook.id === book.id
-        )
-      ) {
-        return currentShelfKey;
-      } else {
-        return accumulator;
-      }
-    }, "");
+    return bookInShelf ? bookInShelf.shelf : "";
   }
 
   render() {
@@ -99,7 +68,7 @@ class App extends Component {
           render={() => (
             <BooksList
               shelves={this.shelves}
-              shelfContents={this.state.shelves}
+              shelfContents={this.state.allBooks}
               changeBookShelfHandler={changeInfo =>
                 this.changeBookShelfHandler(changeInfo)
               }
@@ -115,7 +84,7 @@ class App extends Component {
               changeBookShelfHandler={changeInfo =>
                 this.changeBookShelfHandler(changeInfo)
               }
-              findBookInShelves={book => this.findBookInShelves(book)}
+              findShelfForBook={book => this.findShelfForBook(book)}
               updateSearchResults={(newResults, query) =>
                 this.updateSearchResults(newResults, query)
               }
@@ -126,19 +95,20 @@ class App extends Component {
     );
   }
 
-  componentDidMount() {
-    // add event listener to save state to local storage on refresh
-    window.addEventListener("beforeunload", event => {
-      event.preventDefault();
-
-      try {
-        const serializedState = JSON.stringify(this.state);
-        localStorage.setItem("state", serializedState);
-      } catch (err) {
+  fetchAllBooks() {
+    getAll()
+      .then(results => {
+        this.setState(prevState => {
+          prevState.allBooks = results;
+          return prevState;
+        });
+      })
+      .catch(err => {
         console.log(err);
-      }
-      event.returnValue = "";
-    });
+      });
+  }
+  componentDidMount() {
+    this.fetchAllBooks();
   }
 }
 

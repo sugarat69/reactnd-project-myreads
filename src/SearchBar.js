@@ -62,7 +62,7 @@ const SearchBar = props => {
                   props.changeBookShelfHandler(changeInfo)
                 }
                 shelves={props.shelves}
-                shelfKey={props.findBookInShelves(book)}
+                shelfKey={props.findShelfForBook(book)}
               />
             </li>
           ))}
@@ -76,7 +76,7 @@ SearchBar.propTypes = {
   shelves: PropTypes.object.isRequired,
   searchInfo: PropTypes.object.isRequired,
   changeBookShelfHandler: PropTypes.func.isRequired,
-  findBookInShelves: PropTypes.func.isRequired,
+  findShelfForBook: PropTypes.func.isRequired,
   updateSearchResults: PropTypes.func.isRequired
 };
 
